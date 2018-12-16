@@ -1,0 +1,207 @@
+\ This is a FORTH list of the SD card access words. They are actually
+\ written in the TASM file but are rewritten here for clarity.
+\    ____  ____   ____              _                 _  ____                      _ _          __        __            _     
+\   / ___||  _ \ / ___|__ _ _ __ __|   __ _ _ __   __|  / ___|___  _ __ ___  _ __ (_| | ___ _ __\ \      / ___  _ __ __| |___ 
+\   \___ \| | | | |   / _` | '__/ _`  / _` | '_ \ / _` | |   / _ \| '_ ` _ \| '_ \| | |/ _ | '__ \ \ /\ / / _ \| '__/ _` / __|
+\    ___) | |_| | |__| (_| | | | (_| | (_| | | | | (_| | |__| (_) | | | | | | |_) | | |  __| |    \ V  V | (_) | | | (_| \__ \
+\   |____/|____/ \____\__,_|_|  \__,_ \__,_|_| |_|\__,_ \____\___/|_| |_| |_| .__/|_|_|\___|_|     \_/\_/ \___/|_|  \__,_|___/
+\                                                                           |_|                                              
+
+: WORD
+   BLK @                \ is the word coming from TIB or mass?
+      IF
+         BLK @ BLOCK
+      ELSE
+         TIB @
+      THEN
+   IN @ + SWAP
+   HERE 34 BLANKS
+   ENCLOSE 
+   IN +! OVER - >L 
+   L@ HERE C!           \ write the count byte 
+   + HERE 1+            \ calculate source and destination
+   L> CMOVE             \ and move the rest of the word to 'HERE'
+;
+
+: -FIND       ( PFA, LEN, TRUE(FFFFh)) <----found a match
+   BL  WORD   ( FALSE(0000h)) <-------------didn't find a match     
+   HERE  CONTEXT  @  @  (FIND)
+   DUP  0=  IF  
+               DROP  HERE  LATEST  (FIND)  
+            ENDIF  
+;
+
+: INTERPRET   ( interpret compile source input words )
+  BEGIN  -FIND
+     IF  ( found )  
+        STATE  @  <
+           IF  
+              CFA  ,  
+           ELSE  
+              CFA  EXECUTE  
+           ENDIF  
+        ?STACK
+     ELSE  
+        HERE  NUMBER  DPL  @  1+
+           IF  
+              [COMPILE]  DLITERAL
+           ELSE   
+              DROP  [COMPILE]  LITERAL  
+           ENDIF  
+        ?STACK
+     ENDIF  
+  AGAIN  
+;
+
+\ (BLOCK) is a helper function that calculates the offset into the SD card using the 
+\ SHADOW variable. If the SHADOW variable is non-zero then the address points to the
+\ documentation block. Otherwise it points to the source code block.
+
+: (BLOCK)
+   2048 U* 1024. D- 
+   SHADOW C@ 
+      IF 
+         1024. D+ 
+      THEN 
+;
+
+\ Pin 43 (2Bh) is used to illuminate an LED to show when the SD card is being accessed
+\ Every FOPEN should, after performing its action, be followed by an FCLOSE.
+: FOPEN  1 2B PIN! (FOPEN) ;
+: FCLOSE 0 2B PIN! (FCLOSE) ;
+
+\ If CUB (current block) is already equal to the number that is being stored at the requested 
+\ screen there is no reason to update the information in the buffer.
+
+\ Actual form in TASM
+\ This is, of course, impossible to compile but may take fewer words in FLASH
+: BLOCK ( block# - address )
+   DUP CUB @ = NOT
+   SHADOW C@ (SHADOW) C@ = NOT
+   OR
+      IF
+         DUP CUB !
+         SHADOW C@
+         (SHADOW) C!
+         (BLOCK) READ FOPEN FSEEK
+         0 CSUM !
+         FIRST DUP 1024 + SWAP
+            DO
+               FKEY DUP CSUM +! I C!
+            LOOP
+         FCLOSE
+         0 UPDATE C! 
+         FIRST ;
+      THEN
+   DROP FIRST
+;
+
+\ Canonical FORTH form.
+\ If the code were processed by the FORTH compiler then the source would look
+\ like this. Notice the IF.. ELSE... THEN structure.
+: BLOCK ( block# - address )
+   DUP CUB @ = 
+   SHADOW C@ (SHADOW) C@ =
+   OR
+      IF
+         DROP FIRST
+      ELSE
+         DUP CUB !
+         SHADOW C@
+         (SHADOW) C!
+         (BLOCK) READ FOPEN FSEEK
+         0 CSUM !
+         FIRST DUP 1024 + SWAP
+            DO
+               FKEY DUP CSUM +! I C!
+            LOOP
+         FCLOSE
+         0 UPDATE C! 
+         FIRST 
+      THEN
+;
+
+
+: LOAD
+   0 SHADOW C! 
+   BLK @ >R
+   IN  @ >R
+   0 IN ! B/SCR *
+   INTERPRET
+   R> IN !
+   R> BLK !
+;
+
+
+   DW    zero, shadow, cstor ; I added "0 SHADOW C!" to avoid loading documentation.
+   DW    blk, at, tor                                                 ; kjc
+   DW    inn, at, tor
+   DW    zero, inn, store
+   DW    bscr, star
+   DW    blk, store
+   DW    inter
+   DW    fromr, inn, store
+   DW    fromr, blk, store
+   DW    semis
+
+\ It is a good idea to implement a means of using bit-wide variables. There are many in the USER
+\ variable array that never assume values outside the range of 0 and 1. The burden of carrying
+\ the bulk of the data will be in the FLASH and there is a lot more of that than there is any of
+\ the other storage types. I envision each of these user-bit-variables to consist of a single 
+\ byte. Its significance will be as follows:
+
+\   32 byte locations    bit addr
+\ /-------------------\/----------\
+\ +---+---+---+---+---+---+---+---+
+\ |   |   |   |   |   |   |   |   |
+\ +---+---+---+---+---+---+---+---+
+
+: VLIST
+   80 out ! context @ @ 
+      begin
+         out @ c/l <
+            if
+               crlf 0 out ! 
+            then
+               dup hex. space 
+               dup .dot
+               20 out @ over mod - spaces
+               pfa lfa @ dup
+
+
+
+   DW   zbran             ; if
+   DW   vlis2
+   DW   crlf
+   DW   zero
+   DW   outt
+   DW   store             ; endif
+vlis2:
+   DW   dup
+   DW    hexdot
+   ;DW    lit, 4, outt, pstor
+   DW   space
+   DW    dup
+   DW   iddot
+
+vlisloo:
+
+   DW    lit, 20
+   DW    outt
+   DW    at
+   DW    over
+   DW    modd
+   DW    subb
+   DW    spacs
+
+   DW   pfa
+   DW   lfa
+   DW   at
+   DW   dup
+   DW   zequ
+   ;DW   qterm
+   ;DW   orr
+   DW   zbran             ; until
+   DW   vlis1
+   DW   drop
+   DW   semis
