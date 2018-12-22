@@ -772,7 +772,7 @@ void dadd() // D+ {
 //             X   |   C   |   D   | ~ multiplicand
 //                 +-------+-------+
 // +-------+-------+-------+-------+ 
-// |-------|-------|     A * B     | [1]
+// |-------|-------|     D * B     | [1]
 // +-------+-------+-------+-------+
 // |-------|     D * A     |-------| [2]
 // +-------+-------+-------+-------+ 
@@ -781,7 +781,7 @@ void dadd() // D+ {
 // |     C * A     |-------|-------| [4]
 // +-------+-------+-------+-------+
 // +-------+-------+-------+-------+
-// |       |   AB  *  CD   |       | ~ product
+// |      AB       *       CD      | ~ product
 // +-------+-------+-------+-------+
 // The next two routines are rather heavy-handed as they use a lot of bit and byte banging.
 // The U* routine consists of four 8-bit partial products that are shifted and summed to 
