@@ -766,22 +766,22 @@ void dadd() // D+ {
 */
 // A map of one 16-bit x 16-bit = 32-bit operation in terms of four 8-bit x 8-bit = 16-bit operations
 //                 +-------+-------+
-//                 |   A   |   B   | ~ multiplier
+//                 |   A   |   B   | ~ 16-bit multiplier
 //                 +-------+-------+
 //                 +-------+-------+
-//             X   |   C   |   D   | ~ multiplicand
+//             *   |   C   |   D   | ~ 16-bit multiplicand
 //                 +-------+-------+
 // +-------+-------+-------+-------+ 
 // |-------|-------|     D * B     | [1]
 // +-------+-------+-------+-------+
 // |-------|     D * A     |-------| [2]
-// +-------+-------+-------+-------+ 
-// |-------|     C * B     |-------| [3] ~ partial products
+// +-------+-------+-------+-------+    ~ partial products
+// |-------|     C * B     |-------| [3] 
 // +-------+-------+-------+-------+
 // |     C * A     |-------|-------| [4]
 // +-------+-------+-------+-------+
 // +-------+-------+-------+-------+
-// |      AB       *       CD      | ~ product
+// |      AB       *       CD      | ~ 32-bit product
 // +-------+-------+-------+-------+
 // The next two routines are rather heavy-handed as they use a lot of bit and byte banging.
 // The U* routine consists of four 8-bit partial products that are shifted and summed to 
