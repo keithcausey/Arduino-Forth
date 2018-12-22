@@ -87,6 +87,14 @@ int stackPointerF = FSTACKLEN - 1;
 
 #define SDCS              53 // The CS_ pin for the SD card
 
+// assuming the most relevant parts of the stack are the top three entries I am using the following mnemonics:
+// TOS is the Top Of Stack
+// NOS is the Next On Stack
+// BOS is the Bottom Of Stack
+#define TOS          stack[stackPointer]
+#define NOS          stack[stackPointer+1]
+#define BOS          stack[stackPointer+2]
+
 File  theFile; // this is the 'hardwired' file that will have to suffice pending implementation of string variables
 char fileName[13];
 
