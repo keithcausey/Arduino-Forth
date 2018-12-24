@@ -7,4 +7,4 @@ There are three directories here that are used to separate three conceptually di
 The 'Ardufigo' directory contains the code necessary to operate the Arduino API.
 The 'ArdufigoFORTH' directory contains the scripts for the production of translated files for Ardufigo.
 The ArdufigoTASM folder compiles the outer interpreter that will be translated by gforth scripts and provided to the Arduino API.
-There is another file that is tentatively entitled INVERSEK.BLK which is what the Ardufigo system uses for storing and editing its source code. The name INVERSEK.BLK comes from the original project I wanted to use this system for: inverse kinematic calculations for positioning Dynamixel servos. The BLK is a standard FORTH extension for FORTH source code.
+There is another file that is tentatively entitled INVERSEK.BLK which is what the Ardufigo system uses for storing and editing its source code. The name INVERSEK.BLK comes from the original project I wanted to use this system for: inverse kinematic calculations for positioning Dynamixel servos. The *.BLK extension is a standard FORTH extension for FORTH source code.
