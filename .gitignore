@@ -1,0 +1,36 @@
+# Build artifacts
+build/
+*.hex
+*.obj
+*.o
+*.elf
+*.eep
+*.lss
+*.map
+
+# Arduino build files
+*.ino.hex
+*.ino.elf
+*.ino.with_bootloader.hex
+*.ino.eep
+*.ino.map
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Don't ignore the generated header (we need it for Arduino compilation)
+!Ardufigo/ArdufigoROM.h
+!Ardufigo/ArdufigoRAM.h
