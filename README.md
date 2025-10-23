@@ -4,6 +4,21 @@ A version of Fig Forth for the Arduino Mega1280 and 2560.
 The scope of this project is to create an operating system based on Fig-FORTH that uses the Arduino API. 
 A brief explanation of FORTH is required here. There is a relatively small but extensible set of 'primitives' written in the native 'C' and 'C++' of the Arduino API, and the outer interpreter written as indirect threaded code references to the primitives. The outer interpreter is assembled from Ardufigo.ASM and converted to a C header file using open-source Python tools. This arrangement allows the compilation of new code using the Arduino Fig-FORTH (Ardufigo), the source of which may be stored on an SD card using a resident FORTH-based editor.
 
+## Quick Start
+
+**New here?** See [QUICKSTART.md](QUICKSTART.md) for step-by-step instructions.
+
+**TL;DR:**
+```bash
+# 1. Clone and build
+git clone https://github.com/keithcausey/Arduino-Forth.git
+cd Arduino-Forth
+./setup.sh
+
+# 2. Upload to Arduino Mega using Arduino IDE or arduino-cli
+# 3. Connect via Serial Monitor at 115200 baud
+```
+
 ## Directory Structure
 
 - **Ardufigo/** - Contains the Arduino IDE project with the C/C++ code for the Arduino API
@@ -54,8 +69,24 @@ The original build process used proprietary TASM assembler which has been replac
 - **hex2header.py** - Converts Intel HEX format to C header files with PROGMEM byte arrays
 - **build.sh** - Build script that orchestrates the assembly and conversion process
 
-All tools are licensed as Public Domain to match the FIG-FORTH release.
+All tools are licensed as Public Domain to match the FIG-FORTH release. See [tools/README.md](tools/README.md) for detailed documentation.
 
 ## Additional Files
 
 **INVERSEK.BLK** is the block file that Ardufigo uses for storing and editing FORTH source code. The name INVERSEK.BLK comes from the original project: inverse kinematic calculations for positioning Dynamixel servos. The *.BLK extension is a standard FORTH extension for FORTH source code.
+
+## License
+
+This project is based on FIG-FORTH, which is **PUBLIC DOMAIN**:
+
+> ALL PUBLICATIONS OF THE FORTH INTEREST GROUP
+> ARE PUBLIC DOMAIN. THEY MAY BE FURTHER
+> DISTRIBUTED BY THE INCLUSION OF THIS CREDIT NOTICE:
+> 
+> This publication has been made available by the
+>   Forth Interest Group
+>   P.O.Box 1105
+>   San Carlos, CA 94070
+>   U.S.A.
+
+All components of this project, including the build tools, maintain this public domain status.
